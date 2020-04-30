@@ -1,0 +1,72 @@
+\documentclass{cup-pan}
+\usepackage[utf8]{inputenc}
+\usepackage{blindtext}
+
+\title{An Intuitive Introduction to Generative Adversarial Networks}
+
+\author[ ]{Samrat Sahoo}
+
+\affil[ ]{UT Arlington}
+\affil[ ]{Advisor: Professor Won Hwa Kim}
+\affil[ ]{Email: \url{won.kim@uta.edu}}
+
+%% Abbreviated author list for the running footer
+\runningauthor{Samrat Sahoo}
+
+\addbibresource{refs.bib}
+
+\begin{document}
+
+\maketitle
+ 
+\begin{abstract}
+With data becoming increasingly more important in the world of machine learning and data science, researchers have developed systems known to generate data from scratch. These systems are known as Generative Adversarial Networks or GANs. This paper gives a brief and intuitive introduction and analysis over Generative Adversarial Networks and their applications.
+
+\keywords{Generative Adversarial Network (GAN), Synthetic Data, Machine Learning}
+\end{abstract}
+
+\section{Introduction to Generative Adversarial Networks}
+\label{sec:overview}
+
+ Within the world of machine learning, we often interpolate based on large amounts of data. However, in many areas, data is generally limited. Take for example the COVID-19 crisis in 2020. Many teams built models in order to diagnose the disease; however, because the disease was new, there was very little actual data to create models for diagnosis leading to generally lower accuracies within the models. Generative Adversarial Networks aim to fix this problem. The essence of GANs is to create data from scratch. With this power, the field of machine learning has the potential to completely be revolutionized. When looking at the name Generative Adversarial Network, one can deduce that there is a generator and an adversary that produces a network. As its name suggests, a GAN is made up of two parts: a generative model and a discriminating model \textbf{[2]}.
+
+\section{The Generative Model}
+
+The generative model works through adding noise to a normal distribution. Lets say we are given the function \textbf{[1]}:
+\begin{equation}
+G(z) = x
+\end{equation}
+Where z represents the noise or distortion to a function data set and G(z) is our generative model to produce an image of x. The variable z will generally make changes to different features of our image. So, for example, if we are given an image of a face, it will take the facial image and alter different features of the image such as the color of eyebrows. Intuitively thinking about this function, by adding a noise, z, to some piece of data, you would be altering one dimension of that piece of data. Therefore, taking facial images as an example, you would be altering one aspect of the face \textbf{[1]}.
+
+\section{The Discriminating Model}
+
+Alone, a generative model seems to be enough to produce artificial data. However, the discriminator plays an important role when it comes to the data generation. As its name suggests, it "discriminates" the generative model. You can think of this as a guiding factor for the generative model. The discriminating model is trained based on real images for what is trying to be generated. For example, if we wanted to create synthetic data for faces, we would train the discriminating model on real faces. It would then test images created by the generative model and provide feedback so that the generative model can create real like images as well. This can be expressed mathematically as well. For the discriminating model, we are given the function \textbf{[1]}:
+\begin{equation}
+D(x)
+\end{equation}
+Given that we have two states, the real image and machine generated image, We can make the following conclusions:
+\begin{equation}
+D(x) = 0
+\end{equation}
+\centerline{or}
+\begin{equation}
+D(x) = 1
+\end{equation}
+The D(x) function has the purpose of outputting two different states. All real data will be labeled with 1 within the D(x) function. When outputted 0, the discriminating model recognizes that is a machine-generated data whereas if it outputs 1, it does not recognize it is machine generated data. The ultimate goal would be for the generative network to produce real enough data so that the discriminating model would output 1. After many iterations, the generative model will produce real-like data such that the discriminating model can no longer differentiate between the two. This forms the basis of a Generative Adversarial Network \textbf{[1]}. 
+
+\section{An Introductory Look at CycleGAN}
+
+CycleGAN is a practical application of a Generative Adversarial Network. It focuses on image to image translation. Many of the concepts discussed here can be found within CycleGAN. CycleGAN's primary objective is to produce a distribution of images such that G(x) (equivalent to G(z)) cannot be differentiated from Y (equivalent to image, x). They do this through continuously training the discriminating model. It in essence is a self-improving network \textbf{[3]}.
+
+\section{Concluding Remarks}
+
+Generative Adversarial Networks blend well with machine learning as they have the power to completely revolutionize the field because of the essentially limitless amounts of data that can be produced. This paper has condensed the complex nature of GANs into something more understandable and intuitive for the reader, serving as a foundation for a more abstract understanding of the underlying aspects of GANs. It has also delved into some practical applications of GANs, demonstrating the importance of GANs today.
+
+\section{References}
+\noindent \textbf{[1]}Hui, Jonathan. “GAN - What Is Generative Adversarial Networks GAN?” Medium, Medium, 26 \indent Dec. 2019, medium.com/@jonathanhui/gan-whats-generative-adversarial-networks-and-its-\indent application-f39ed278ef09.
+
+\noindent \textbf{[2]} Ian, Goodfellow. “Generative Adversarial Networks.” , Jean Pouget-Abadie, Mehdi Mirza, Bing \indent Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio, v1, 10 June 2014, 1. arxiv,  \indent arXiv:1406.2661v1. 
+
+\noindent \textbf{[3]} Jun-Yan, Zhu. “Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Net-\indent works.” , Taesung, Park, Phillip, Isola, Alexei, Efros, v6, 30 Mar 2017, 1. arxiv, arXiv:1703.10593v6. 
+
+\end{document}
