@@ -1,0 +1,56 @@
+\documentclass{cup-pan}
+\usepackage[utf8]{inputenc}
+\usepackage{blindtext}
+
+\title{Conditional Generative Adversarial Networks}
+
+\author[ ]{Samrat Sahoo}
+
+\affil[ ]{UT Arlington}
+\affil[ ]{Advisor: Professor Won Hwa Kim}
+\affil[ ]{Email: \url{won.kim@uta.edu}}
+
+%% Abbreviated author list for the running footer
+\runningauthor{Samrat Sahoo}
+
+\addbibresource{refs.bib}
+
+\begin{document}
+
+\maketitle
+ 
+\begin{abstract}
+With Generative Adversarial Networks becoming so prominent within the world of machine learning, alternatives have emerged as an effort to improve these very networks. One such alternative includes conditional generative adversarial networks or cGAN. In this paper, we aim to gain a better understanding of cGANs and their relation to traditional GANs.
+
+\keywords{Conditional Generative Adversarial Network (cGAN), GAN, Machine Learning}
+\end{abstract}
+
+\section{Brief Overview of Generative Adversarial Networks}
+\label{sec:overview}
+Generative Adversarial Networks or GANs is a method in which a generative model can be trained. It has two primary parts to it: the discriminator and the generator. Together, the discriminator and the generator work together in a competitive manner in order to produce real-like synthetic data. A GAN can be represented through the following loss function:
+\begin{equation}
+E_x[\log (D(x))] + E_z[\log (1 - D(G(z)))] 
+\end{equation}
+Such that the generator aims to minimize the loss function while the discriminator aims to maximize the loss function. Through this opposing nature, a generative adversarial network is created.\textbf{[1]}
+
+\section{Introduction to Conditional Generative Adversarial Networks (cGAN)}
+Conditional Generative Adversarial Networks arise when a generative adversarial network is taken and passed through a conditioner. The conditioner is generally an auxiliary piece of information. This auxillary piece of information serves a label or requirement that the GAN must follow when generating data. This in turn allows for more control over the generative adversarial network. \textbf{[2]}
+
+\section{Conditional GAN Minimax Loss Function}
+With a conditional generative adversarial network, we must take into account a condition. This condition can be referred to as $y$. The modified Minimax loss function is represented as shown below:
+\begin{equation}
+E_x[\log (D(x|y))] + E_z[\log (1 - D(G(z|y)))] 
+\end{equation}
+The modified function shares the same basic structure with one minor change. In this modified Minimax Loss function, we take into account the condition, $y$, when calculating the loss for each part \textbf{[2]}.
+\section{Traditional GAN Verseus Conditional GAN}
+Conditional GANs are all about control. With traditional GANs, you are not able to specify any conditions for the generator or discriminator to look for. Therefore, the user has no control over the network. Conditional GANs solve this problem by allowing the specification of a characteristic. Through this one addition, cGANs are significantly able to improve the existing architecture of GANs.  
+
+\section{Concluding Remarks}
+Generative Adversarial Networks are a versatile tool for developers. However, as derivatives of the original GANs arise, these tools become more practical. Conditional GANs are one major step within the world of GANs. They provide the control that developers needed and that traditional GANs lacked. Conditional GANs have, to say the least, been revolutionary within the field of machine learning.   
+
+\section{References}
+\noindent \textbf{[1]} Ian, Goodfellow. “Generative Adversarial Networks.” , Jean Pouget-Abadie, Mehdi Mirza, Bing \indent Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, Yoshua Bengio, v1, 10 June 2014, 1. arxiv,  \indent arXiv:1406.2661v1. 
+
+\noindent \textbf{[2]} Mehdi, Mirza. “Conditional Generative Adversarial Nets,” Simon Osindero  v1, 6 November 2014, \indent arxiv, arXiv:1411.1784v1.
+
+\end{document}
