@@ -6,19 +6,30 @@ import torchvision.transforms as transforms
 
 class NeuralNetwork(nn.Module):
 
+    # NN Constructor
     def __init__(self, trainData, testData, inputSize=784, hiddenSize=500, classes=10, batchSize=100,
                  learningRate=0.001, epochs=10):
         super(NeuralNetwork, self).__init__()
+
+        # Use GPU if possible
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        # Layer Sizes
         self.inputSize = inputSize
         self.hiddenSize = hiddenSize
         self.classes = classes
+
+        # Optimization Parameters
         self.batchSize = batchSize
         self.learningRate = learningRate
         self.epochs = epochs
+
+        # Fully Connected Layers + Rectified Linear Unit
         self.fc1 = nn.Linear(self.inputSize, self.hiddenSize)
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(self.hiddenSize, self.classes)
+
+        # Data + Data Loaders
         self.trainData = trainData
         self.testData = testData
         self.trainLoader = torch.utils.data.DataLoader(dataset=self.trainData,
@@ -28,16 +39,22 @@ class NeuralNetwork(nn.Module):
         self.testLoader = torch.utils.data.DataLoader(dataset=self.testData,
                                                       batch_size=self.batchSize,
                                                       shuffle=False)
+        # Optimizer - Stochastic Gradient Descent
+        self.optimizer = torch.optim.SGD(self.parameters(), lr=self.learningRate)
 
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=self.learningRate)
+        # Cross Entropy Loss
         self.criterion = nn.CrossEntropyLoss()
 
+        self.epsilon = 1e-5
+
+    # Forward Propagation
     def forward(self, x):
         out = self.fc1(x)
         out = self.relu(out)
         out = self.fc2(out)
         return out
 
+    # Train Model
     def trainModel(self):
         totalStep = len(model.trainLoader)
         for epoch in range(self.epochs):
@@ -46,7 +63,7 @@ class NeuralNetwork(nn.Module):
                 images = images.reshape(-1, 28 * 28).to(self.device)
                 labels = labels.to(self.device)
 
-                # Forward pass
+                # Compute Loss
                 outputs = model(images)
                 loss = self.criterion(outputs, labels)
 
