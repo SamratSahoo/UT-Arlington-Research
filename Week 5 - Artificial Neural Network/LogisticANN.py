@@ -1,98 +1,99 @@
-import sys
-
-import numpy as np
-import sklearn
 import torch
-from sklearn import model_selection
-from torch import nn
+import torch.nn as nn
 import torchvision
-from sklearn.datasets import fetch_openml
-import matplotlib.pyplot as plt
+import torchvision.transforms as transforms
 
 
-class NeuralNetwork:
+class NeuralNetwork(nn.Module):
 
-    def __init__(self, xTrain, yTrain, xTest, yTest, iterations=1000, learningRate=0.1, verbose=False, epsilon=1e-5):
-
-        # Training + Testing Data
-        self.xTrain = xTrain
-        self.yTrain = yTrain
-        self.xTest = xTest
-        self.yTest = yTest
-
-        # Gradient Descent Stuff
-        self.iterations = iterations
+    def __init__(self, trainData, testData, inputSize=784, hiddenSize=500, classes=10, batchSize=100,
+                 learningRate=0.001, epochs=10):
+        super(NeuralNetwork, self).__init__()
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.inputSize = inputSize
+        self.hiddenSize = hiddenSize
+        self.classes = classes
+        self.batchSize = batchSize
         self.learningRate = learningRate
+        self.epochs = epochs
+        self.fc1 = nn.Linear(self.inputSize, self.hiddenSize)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(self.hiddenSize, self.classes)
+        self.trainData = trainData
+        self.testData = testData
+        self.trainLoader = torch.utils.data.DataLoader(dataset=self.trainData,
+                                                       batch_size=self.batchSize,
+                                                       shuffle=True)
 
-        # Miscellaneous
-        self.verbose = verbose
-        self.epsilon = epsilon
+        self.testLoader = torch.utils.data.DataLoader(dataset=self.testData,
+                                                      batch_size=self.batchSize,
+                                                      shuffle=False)
 
-    def sigmoid(self, z):
-        return 1 / (1 + np.exp(-z))
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=self.learningRate)
+        self.criterion = nn.CrossEntropyLoss()
 
-    def initializeZeros(self, dim):
-        shape = (dim, 1)
-        weights = np.zeros(shape)
-        bias = 0
-        return weights, bias
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out
 
-    def loss(self, h):
-        print(self.yTrain.shape, h.shape)
-        return (-1 * self.yTrain * np.log(h + self.epsilon) - (1 - self.yTrain) * np.log(1 - h + self.epsilon)).mean()
+    def trainModel(self):
+        totalStep = len(model.trainLoader)
+        for epoch in range(self.epochs):
+            for i, (images, labels) in enumerate(self.trainLoader):
+                # Move tensors to the configured device
+                images = images.reshape(-1, 28 * 28).to(self.device)
+                labels = labels.to(self.device)
 
-    def propagate(self, weights, bias):
-        # Forward Propagation
-        activation = self.sigmoid(np.dot(weights.T, self.xTrain) + bias)
-        loss = self.loss(activation)
+                # Forward pass
+                outputs = model(images)
+                loss = self.criterion(outputs, labels)
 
-        # Back Propagation
-        dw = (1 / self.xTrain.shape[0]) * np.dot(self.xTrain, (activation - self.yTrain).T)
-        db = np.sum(activation - self.yTrain).mean()
+                # Backpropagation and optimization
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
-        return dw, db, loss
+                if (i + 1) % 100 == 0:
+                    print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
+                          .format(epoch + 1, model.epochs, i + 1, totalStep, loss.item()))
 
-    def gradientDescent(self, weights, bias):
-        costs = []
-        for i in range(self.iterations):
-            dw, db, loss = self.propagate(weights, bias)
-            weights -= self.learningRate * dw
-            bias -= self.learningRate * db
+    def testModel(self):
+        with torch.no_grad():
+            correct = 0
+            total = 0
+            for images, labels in self.testLoader:
+                images = images.reshape(-1, 28 * 28).to(self.device)
+                labels = labels.to(self.device)
+                outputs = model(images)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
 
-            if i % 100 == 0:
-                costs.append(loss)
-
-            if self.verbose and i % 100 == 0:
-                print("Cost is {} for iteration {}".format(costs[i - 1], i))
-
-        return weights, bias, dw, db, costs
-
-    def predict(self, weights, bias, X):
-        print(X)
-        predictions = np.zeros(1, X[1])
-        weights = weights.reshape(X.shape[0], 1)
-
-        activation = self.sigmoid((np.dot(weights.T, X) + bias))
-        for i in range(activation.shape[1]):
-            predictions[0, i] = 1 if activation[0, i] > 0.5 else 0
-
-        return predictions
+            print('Accuracy of the network on the 10000 test images: {} %'.format(100 * correct / total))
 
 
 if __name__ == '__main__':
-    # Initialize Settings + Dataset
-    np.set_printoptions(threshold=sys.maxsize)
-    dataPath = "Data/"
-    # mnist = fetch_openml('mnist_784', data_home=dataPath)
-    mnist = sklearn.datasets.load_digits()  # Use for Debugging!
-    xTrain = mnist.data
-    yTrain = (mnist.target != 0)
-    xTrain, xTest, yTrain, yTest = model_selection.train_test_split(xTrain, yTrain, train_size=0.65, test_size=0.35,
-                                                                    random_state=101)
+    # MNIST Data
+    trainData = torchvision.datasets.MNIST(root='Data/',
+                                           train=True,
+                                           transform=transforms.ToTensor(),
+                                           download=True)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = NeuralNetwork(xTrain, yTrain, xTest, yTest)
+    testData = torchvision.datasets.MNIST(root='Data/',
+                                          train=False,
+                                          transform=transforms.ToTensor(),
+                                          download=True)
 
-    weights, bias = model.initializeZeros(xTrain.shape[0])
-    weights, bias, dw, db, costs = model.gradientDescent(weights, bias)
-    preds = model.predict(weights, bias, xTest)
+    ''' Use to Train + Save Model if necessary
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    model = NeuralNetwork(trainData=trainData, testData=testData).to(device)
+    model.trainModel()
+    torch.save(model.state_dict(), 'Models/model.pt') '''
+
+    # Load Model and Test
+    model = NeuralNetwork(trainData=trainData, testData=testData)
+    model.load_state_dict(torch.load('Models/model.pt'))
+    model.testModel()
