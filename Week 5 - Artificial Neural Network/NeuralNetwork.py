@@ -25,11 +25,11 @@ class NeuralNetwork(nn.Module):
         self.epochs = epochs
 
         # Fully Connected Layers + Rectified Linear Unit
-        self.fc1 = nn.Linear(self.inputSize, self.hiddenSize)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(self.hiddenSize, self.classes)
+        self.fc1 = nn.Linear(self.inputSize, self.hiddenSize)  # Input Layer --> Hidden Layer
+        self.relu = nn.ReLU()  # ReLU to Process Data
+        self.fc2 = nn.Linear(self.hiddenSize, self.classes)  # Hidden Layer ---> Output Layer
 
-        # Data + Data Loaders
+        # Data + Data Loaderse
         self.trainData = trainData
         self.testData = testData
         self.trainLoader = torch.utils.data.DataLoader(dataset=self.trainData,
@@ -49,18 +49,26 @@ class NeuralNetwork(nn.Module):
 
     # Forward Propagation
     def forward(self, x):
+        # Run through first FCL
         out = self.fc1(x)
+        # Process through ReLU
         out = self.relu(out)
+        # Run Through second FCL
         out = self.fc2(out)
         return out
 
     # Train Model
     def trainModel(self):
         totalStep = len(model.trainLoader)
+        # Training Loop
         for epoch in range(self.epochs):
+            # Gather Images + Labels
             for i, (images, labels) in enumerate(self.trainLoader):
-                # Move tensors to the configured device
+
+                # Resize + Move to device
                 images = images.reshape(-1, 28 * 28).to(self.device)
+
+                # Move tensors to the configured device
                 labels = labels.to(self.device)
 
                 # Compute Loss
@@ -80,11 +88,19 @@ class NeuralNetwork(nn.Module):
         with torch.no_grad():
             correct = 0
             total = 0
+            # Iterate through images + Labels
             for images, labels in self.testLoader:
+                # Resize + Move to device
                 images = images.reshape(-1, 28 * 28).to(self.device)
                 labels = labels.to(self.device)
+
+                # Predict
                 outputs = model(images)
+
+                # Take maximum probabilities of Data
                 _, predicted = torch.max(outputs.data, 1)
+
+                # Correct/Incorrect
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
 
