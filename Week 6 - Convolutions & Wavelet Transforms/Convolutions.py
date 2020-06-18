@@ -30,7 +30,6 @@ def convolve2D(image, kernel, padding=0, strides=1):
     if padding != 0:
         imagePadded = np.zeros((image.shape[0] + padding*2, image.shape[1] + padding*2))
         imagePadded[int(padding):int(-1 * padding), int(padding):int(-1 * padding)] = image
-        print(imagePadded)
     else:
         imagePadded = image
 
