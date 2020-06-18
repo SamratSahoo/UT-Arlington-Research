@@ -27,9 +27,10 @@ def convolve2D(image, kernel, padding=0, strides=1):
     output = np.zeros((xOutput, yOutput))
 
     # Apply Equal Padding to All Sides
-    if padding != 0 and padding % 2 == 0:
-        imagePadded = np.zeros((image.shape[0] + padding, image.shape[1] + padding))
-        imagePadded[int(padding / 2):int(-1 * padding / 2), int(padding / 2):int(-1 * padding / 2)] = image
+    if padding != 0:
+        imagePadded = np.zeros((image.shape[0] + padding*2, image.shape[1] + padding*2))
+        imagePadded[int(padding):int(-1 * padding), int(padding):int(-1 * padding)] = image
+        print(imagePadded)
     else:
         imagePadded = image
 
@@ -55,8 +56,6 @@ def convolve2D(image, kernel, padding=0, strides=1):
 
 
 if __name__ == '__main__':
-    np.set_printoptions(threshold=sys.maxsize)
-
     # Grayscale Image
     image = processImage('Image.jpeg')
 
