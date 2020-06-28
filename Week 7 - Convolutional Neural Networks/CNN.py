@@ -60,14 +60,16 @@ class ConvolutionalNN(nn.Module):
     def trainModel(self):
         for epoch in range(1, self.epochs +1):
             self.train()
+            # Iterate through images + labels
             for i, (images, labels) in enumerate(self.trainLoader):
                 # Move tensors to the configured device
                 images = images.to(self.device)
                 labels = labels.to(self.device)
 
-                # Computer Loss
+                # Compute Loss
                 self.optimizer.zero_grad()
                 output = model(images)
+                # Compare target to output
                 loss = F.nll_loss(output, labels)
 
                 # Backpropagation and optimization
@@ -86,10 +88,12 @@ class ConvolutionalNN(nn.Module):
             for image, label in self.testLoader:
                 image, label = image.to(self.device), label.to(self.device)
                 output = model(image)
-                test_loss += F.nll_loss(output, label, reduction='sum').item()  # sum up batch loss
-                pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+                # sum up batch loss
+                test_loss += F.nll_loss(output, label, reduction='sum').item()
+                # get the index of the max probability
+                pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(label.view_as(pred)).sum().item()
-
+        # Average Loss
         test_loss /= len(self.testLoader.dataset)
 
         print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
