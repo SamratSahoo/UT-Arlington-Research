@@ -29,7 +29,7 @@ class NeuralNetwork(nn.Module):
         self.relu = nn.ReLU()  # ReLU to Process Data
         self.fc2 = nn.Linear(self.hiddenSize, self.classes)  # Hidden Layer ---> Output Layer
 
-        # Data + Data Loaderse
+        # Data + Data Loaders
         self.trainData = trainData
         self.testData = testData
         self.trainLoader = torch.utils.data.DataLoader(dataset=self.trainData,
