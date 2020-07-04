@@ -59,7 +59,7 @@ class NeuralNetwork(nn.Module):
 
     # Train Model
     def trainModel(self):
-        totalStep = len(model.trainLoader)
+        totalStep = len(self.trainLoader)
         # Training Loop
         for epoch in range(self.epochs):
             # Gather Images + Labels
@@ -72,7 +72,7 @@ class NeuralNetwork(nn.Module):
                 labels = labels.to(self.device)
 
                 # Compute Loss
-                outputs = model(images)
+                outputs = self(images)
                 loss = self.criterion(outputs, labels)
 
                 # Backpropagation and optimization
@@ -82,7 +82,7 @@ class NeuralNetwork(nn.Module):
 
                 if (i + 1) % 100 == 0:
                     print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-                          .format(epoch + 1, model.epochs, i + 1, totalStep, loss.item()))
+                          .format(epoch + 1, self.epochs, i + 1, totalStep, loss.item()))
 
     def testModel(self):
         with torch.no_grad():
@@ -95,7 +95,7 @@ class NeuralNetwork(nn.Module):
                 labels = labels.to(self.device)
 
                 # Predict
-                outputs = model(images)
+                outputs = self(images)
 
                 # Take maximum probabilities of Data
                 _, predicted = torch.max(outputs.data, 1)
@@ -124,9 +124,9 @@ if __name__ == '__main__':
 
     model = NeuralNetwork(trainData=trainData, testData=testData).to(device)
     model.trainModel()
-    torch.save(model.state_dict(), 'Models/model.pt') '''
+    torch.save(model.state_dict(), 'Models/binary.pt') '''
 
     # Load Model and Test
     model = NeuralNetwork(trainData=trainData, testData=testData)
-    model.load_state_dict(torch.load('Models/model.pt'))
+    model.load_state_dict(torch.load('Models/binary.pt'))
     model.testModel()

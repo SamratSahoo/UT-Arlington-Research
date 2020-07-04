@@ -70,9 +70,9 @@ if __name__ == '__main__':
     try:
         # Initialize Settings + Dataset
         np.set_printoptions(threshold=sys.maxsize)
-        dataPath = "Data/"
-        mnist = fetch_openml('mnist_784', data_home=dataPath)
-        # mnist = sklearn.datasets.load_digits() # Use for Debugging!
+        # dataPath = "Data/"
+        # mnist = fetch_openml('mnist_784', data_home=dataPath)
+        mnist = sklearn.datasets.load_digits() # Use for Debugging!
 
         # Split Data
         model = LogisticRegression(verbose=True, iterations=1000)

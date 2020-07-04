@@ -9,7 +9,7 @@ class ConvolutionalNN(nn.Module):
     def __init__(self, trainData, testData, learningRate=0.01, batchSize=100, epochs=10):
         super(ConvolutionalNN, self).__init__()
         # Device to use
-        self.device = torch.device('cpu' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.epochs = epochs
         self.learningRate = learningRate
         self.batchSize = batchSize
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     model = ConvolutionalNN(trainData, testData, epochs=100)
     ''' Use to Train + Save Model if necessary
     model.trainModel()
-    torch.save(model.state_dict(), 'Models/model.pt')
+    torch.save(model.state_dict(), 'Models/binary.pt')
     '''
-    model.load_state_dict(torch.load('Models/model.pt'))
+    model.load_state_dict(torch.load('Models/binary.pt'))
     model.testModel()
