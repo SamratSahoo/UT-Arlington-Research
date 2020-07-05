@@ -144,6 +144,7 @@ class BinaryClassifier(nn.Module):
 
         # Get points to plot
         fpr, tpr, thresholds = metrics.roc_curve(targetData, predictedData)
+        print(metrics.auc(fpr, tpr))
 
         # Plot & Save
         plt.plot(fpr, tpr)
