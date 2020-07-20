@@ -62,7 +62,7 @@ class LogisticRegression:
         return self.sigmoid(np.dot(x, self.theta))
 
     def predict(self, x, threshold=0.5):
-        # Predict which category the data belongs
+        # Predict which category the data.txt belongs
         return self.predictProbability(x) >= threshold
 
 
