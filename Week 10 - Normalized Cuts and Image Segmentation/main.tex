@@ -1,0 +1,223 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
+                                                          % if you need a4paper
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
+                                                          % paper
+
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\definecolor{navy}{RGB}{0, 0, 128}
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{amsmath} % assumes amsmath package installed
+%\usepackage{amssymb}  % assumes amsmath package installed
+
+\title{\LARGE \bf
+An Analysis of Normalized Cuts and Image Segmentation
+}
+
+%\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
+%         \thanks{*Use the $\backslash$thanks command to put information here}\\
+%         Faculty of Electrical Engineering, Mathematics and Computer Science\\
+%         University of Twente\\
+%         7500 AE Enschede, The Netherlands\\
+%         {\tt\small h.kwakernaak@autsubmit.com}}
+%         \hspace*{ 0.5 in}
+%         \parbox{3 in}{ \centering Pradeep Misra**
+%         \thanks{**The footnote marks may be inserted manually}\\
+%        Department of Electrical Engineering \\
+%         Wright State University\\
+%         Dayton, OH 45435, USA\\
+%         {\tt\small pmisra@cs.wright.edu}}
+%}
+
+\author{Samrat Sahoo \\
+        Advisor: Won Hwa Kim, UT Arlington}% <-this % stops a space
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+In this paper, a detailed summary and analysis over Shi and Malik's paper on Normalized Cuts and Image Segmentation. Each section covers a summary and analysis of the respective portion of the original paper. The original paper can be found here: \color{navy}\url{https://people.eecs.berkeley.edu/~malik/papers/SM-ncut.pdf}
+\color{black}
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\subsection{Wertheimer’s Perceptual Grouping Theory}
+In the introduction, Shi and Malik note that their research is based off of Wertheimer’s Perceptual Grouping Theory. This theory states that regions should be grouped together based on looking at the image on a higher level through objects and patterns.
+
+\subsection{Choosing the right Subset for Partitions}
+They notes that there are two key factors to choose the right subset when partitioning:
+\begin{itemize}
+
+\item \textbf {Bayesian View of Subsets:} You  can look at a picture and classify it on a low level (brightness, color, texture, etc.) and mid/high level (symmetry, object Models, etc.)
+\smallbreak
+\item \textbf {Hierarchy Partitions:} Use low-level cues to form a hierarchical partition and Mid/High-Level knowledge to verify or selects new areas for the hierarchy. Essentially, go from the big picture downwards.
+\end{itemize}
+
+\subsection{New Approach to Segmentation}
+On higher dimensional problems the greedy and gradient descent approach usually fails. The new approach uses grouping by splitting vertices into disjoint sets and keeping the similarity high within a set and low between sets. The partitions are then evaluated based on a loss known as a normalized cut.
+
+\section{Grouping as Graph Partitioning}
+\subsection{Normalized Cut \& Association}
+Previously, the regular cut was used as a loss function, however, it often cut isolated edges. In order to prevent this, a normalized cut was developed which used the cut as a fraction of the total edges. A similar method was used to normalize association.
+\smallbreak
+The goal of the Algorithm minimizing the disassociation between the groups and maximizing the association within the groups
+\subsection{Computing the Optimal Partition}
+Please note that for the sake of simplicity, most of the math has been omitted from the summary.
+In order the compute the optimal partition efficiently using the normalized cut, a generalized eigenvalue problem is solved. The eigenvalue problem is as follows:
+\begin{equation}
+    (D-W)y = \lambda Dy
+\end{equation}
+The parts of the problem:
+\begin{itemize}
+
+\item \textbf{$D$:} An $N x N$ (Where $N = |V|$) diagonal matrix 
+\item \textbf{$W$:} An $N x N$ symmetrical matrix such that $W(i,j) = w_{ij}$
+\item \textbf{$y$:} $y = (1 + x) - b(1-x)$
+\end{itemize}
+\smallbreak
+Check the original paper for the full details of each part of the eigenvalue system.
+\section{The Grouping Algorithm}
+There are four steps to the Grouping Algorithm proposed in this paper. In simple:
+\begin{itemize}
+\item First, get a graph of G = (V,E) and set weights to be the similarity between nodes.
+\smallbreak
+\item Solve $(D-W)y = \lambda Dy$ for the smallest eigenvalues
+\smallbreak
+\item Split the graph into two with the 2nd smallest eigenvalue's eigenvector
+\smallbreak
+\item Recursively decide if another partition is necessary within current partitions 
+\end{itemize}
+
+\subsection{Example: Brightness Images}
+Some of the main points from each of the step include:
+\begin{itemize}
+\item \textbf{Step 1:} Uses spatial location and brightness value to determine the edge weight connecting the nodes
+\smallbreak
+\item \textbf{Step 2:} Finds the most useful eigenvector and eigenvalues using the Lanczos Method to decrease computation time
+\item \textbf{Step 3:} Since the eigenvectors are continuous, the splitting point is chosen where the resulting partition have the best Normalized Cut value.
+\item \textbf{Step 4:} Recursively partition and stop partitioning after Normalized Cut reaches a threshold. Additionally, ignore smoothly varying eigenvectors to avoid unstable cuts.
+\end{itemize}
+
+\subsection{Recursive Two-Way Ncut}
+The Normalized Cut (Ncut) is the driving force that dictates how many partitions are allowed. 
+\subsection{Simultaneous K-Way Cut with Multiple Eigenvectors}
+\subsubsection{Limitations to the Two-Way Ncut}
+The Two-Way Ncut fails to cut oscillating eigenvectors and subsequent eigenvectors. Additionally, since it uses only the 2nd eigenvector, it is computationally wasteful.
+\smallbreak
+\subsubsection{K-Way Cut}
+The K-way cut will use the first $n$ eigenvectors instead of one and uses a clustering algorithm to split it into groups. To exclude oscillating eigenvectors, there are 2 main approaches: 
+\begin{itemize}
+\item \textbf{Greedy Pruning:} Iteratively merges 2 segments until only k segments are left.
+\item \textbf{Global recursive Cut:} Create a condensed version of the graph and recursively bipartition from there.
+\end{itemize}
+\section{Experiments}
+In the experiments, a function, $F(i)$, is used to output a feature vector based on the intensity, color, or texture. Through their experimentation, the algorithm grabs major components and ignores minor ones.
+\subsection{Motion Case}
+The image sequence is treated as a spatiotemporal dataset which is then used to calculate the motion distance through using the motion profile. A motion profile estimates the  probability distribution of the image velocity.
+\subsection{Computation Time}
+There are two ways to reduce the computation time: 
+\begin{itemize}
+\item \textbf{Multiresolution Implementation:} This is most effective to reduce time on larger images
+\item \textbf{Parallel Computing:} The matrix vector multiplication can be ran in parallel in future chips.
+\end{itemize}
+
+\subsection{Choice of Graph Edge Weight}
+The weight function that was chosen for this problem:
+\begin{equation}
+    w(x) = e^{(-d(x)/\sigma)^2}
+\end{equation}
+This weight function was chosen for its versatility and simplicity but it is possible for weight functions to vary from region to region.
+\section{Relationship To Spectral Graph Theory}
+The idea of spectral graph theory is to describe properties of the original graph through studying the incidence and Laplacian matrix.
+The work presented in this paper relates to Spectral Graph Theory because it uses the theory to evaluate the approximation when compared to the normalized cut.
+\smallbreak
+Using work in spectral partitioning, the second smallest eigenvalue (Fiedler Value) often leads to a good ratio cut if the Fiedler Value is small. 
+\subsection{Physical Interpretation}
+To analogize the eigenvalue System, a spring-mass system is presented. The parts of the analogy include:
+\begin{itemize}
+\item \textbf{Physical Nodes:} Represent the nodes within the system
+    \item \textbf{Spring:} Connections between Nodes
+    \item \textbf{Spring Stiffness:} Graph Edge Weight
+    \item \textbf{Mass:} Total edge weight
+\end{itemize}
+The idea of this system is that when one node oscillates, nodes that have stronger weights attached to the oscillating node will also oscillate in a group. Weaker springs would then pop off, defining the partition of the image.
+\section{Relationship To other Graph Theoretic Approaches To Image Segmentation}
+\subsection{Comparison with Related Eigenvector-Based Methods}
+\subsubsection{Similarity Between Normalized Cut and Average Cut} Both algorithms are trying to find a balanced partition.
+\smallbreak
+\subsubsection{Similarity Between Normalized Association and Average Association} Both algorithms are trying to find tight clusters. 
+\smallbreak
+The average association has a bias for tight clusters and the average cut has bias for segmentation. However, a normalized cut tries to find a balance between clustering and segmentation.
+\section{Conclusion - Major Takeaways}
+\begin{itemize}
+    \item Perpetual Grouping should be from the top down. It should extract from the big picture and work its way down until it creates a hierarchal structure.
+    \smallbreak
+    \item Normalized Cut is a unbiased criteria; minimizing the normalized cut means maximizing the normalized association
+    \item A generalized eigenvalue system is valuable in getting a real valued solution
+\end{itemize}
+\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{thebibliography}{99}
+
+\bibitem{c1}Shi,J., \& Malik, J.(2000). Normalized cuts and image segmentation.IEEE Transactions on Pattern Analysis and Machine Intelligence, 22, 888–905
+
+
+
+
+
+\end{thebibliography}
+
+
+
+
+\end{document}
